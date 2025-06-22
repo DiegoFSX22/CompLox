@@ -1,5 +1,5 @@
 
-package br.ufma.ecp.diego.jlox;
+package ufma.ecp.diego.jlox;
 
 import java.io.BufferedReader;
 import java.io.IOException;
