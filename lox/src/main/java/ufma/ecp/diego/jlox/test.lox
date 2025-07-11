@@ -1,0 +1,25 @@
+// Teste de escopo
+var a = "global";
+{
+  var a = "block";
+  print a; // Esperado: block
+}
+print a; // Esperado: global
+
+// Teste com var não inicializada
+var x;
+print x; // Esperado: nil
+
+// Teste com expressão matemática
+var b = 10;
+var c = b + 5 * 2;
+print c; // Esperado: 20
+
+// Teste de bloco aninhado
+var outer = "outside";
+{
+  var inner = "inside";
+  print outer; // Esperado: outside
+  print inner; // Esperado: inside
+}
+// print inner; // Deve causar erro: variável indefinida (opcional para testar erro)
