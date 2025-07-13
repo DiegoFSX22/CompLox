@@ -136,7 +136,7 @@ class Parser {
 
     return new Stmt.If(condition, thenBranch, elseBranch);
   }
-  
+
     private Stmt printStatement() {
     Expr value = expression();
     consume(SEMICOLON, "Expect ';' after value.");
@@ -173,7 +173,7 @@ class Parser {
   }
 
     private Expr assignment() {
-    Expr expr = equality();
+    Expr expr = or();
 
     if (match(EQUAL)) {
       Token equals = previous();
@@ -189,7 +189,31 @@ class Parser {
 
     return expr;
   }
+  
+   private Expr or() {
+    Expr expr = and();
 
+    while (match(OR)) {
+      Token operator = previous();
+      Expr right = and();
+      expr = new Expr.Logical(expr, operator, right);
+    }
+
+    return expr;
+  }
+
+    private Expr and() {
+    Expr expr = equality();
+
+    while (match(AND)) {
+      Token operator = previous();
+      Expr right = equality();
+      expr = new Expr.Logical(expr, operator, right);
+    }
+
+    return expr;
+  }
+  
    private boolean match(TokenType... types) {
     for (TokenType type : types) {
       if (check(type)) {
