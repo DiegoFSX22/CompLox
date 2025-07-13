@@ -7,46 +7,47 @@ import static ufma.ecp.diego.jlox.TokenType.*;
 
 class Parser {
     private static class ParseError extends RuntimeException {}
-  private final List<Token> tokens;
-  private int current = 0;
 
-  Parser(List<Token> tokens) {
-    this.tokens = tokens;
-  }
+    private final List<Token> tokens;
+    private int current = 0;
 
-  Expr parse() {
-  List<Stmt> parse() {
-    List<Stmt> statements = new ArrayList<>();
-    while (!isAtEnd()) {
-      statements.add(declaration());
+    Parser(List<Token> tokens) {
+        this.tokens = tokens;
     }
 
-    return statements; 
-  }
+    List<Stmt> parse() {
+        List<Stmt> statements = new ArrayList<>();
+        while (!isAtEnd()) {
+            statements.add(declaration());
+        }
+        return statements; 
+    }
 
     private Expr equality() {
-    Expr expr = comparison();
+        Expr expr = comparison();
 
-    while (match(BANG_EQUAL, EQUAL_EQUAL)) {
-      Token operator = previous();
-      Expr right = comparison();
-      expr = new Expr.Binary(expr, operator, right);
+        while (match(BANG_EQUAL, EQUAL_EQUAL)) {
+            Token operator = previous();
+            Expr right = comparison();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+
+        return expr;
     }
-
-    return expr;
-  }
 
     private Expr comparison() {
-    Expr expr = term();
+        Expr expr = term();
 
-    while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
-      Token operator = previous();
-      Expr right = term();
-      expr = new Expr.Binary(expr, operator, right);
+        while (match(GREATER, GREATER_EQUAL, LESS, LESS_EQUAL)) {
+            Token operator = previous();
+            Expr right = term();
+            expr = new Expr.Binary(expr, operator, right);
+        }
+
+        return expr;
     }
 
-    return expr;
-  }
+
 
     private Expr term() {
     Expr expr = factor();
@@ -115,12 +116,27 @@ class Parser {
   }
 
     private Stmt statement() {
+    if (match(IF)) return ifStatement();
     if (match(PRINT)) return printStatement();
      if (match(LEFT_BRACE)) return new Stmt.Block(block());
 
     return expressionStatement();
   }
 
+   private Stmt ifStatement() {
+    consume(LEFT_PAREN, "Expect '(' after 'if'.");
+    Expr condition = expression();
+    consume(RIGHT_PAREN, "Expect ')' after if condition."); 
+
+    Stmt thenBranch = statement();
+    Stmt elseBranch = null;
+    if (match(ELSE)) {
+      elseBranch = statement();
+    }
+
+    return new Stmt.If(condition, thenBranch, elseBranch);
+  }
+  
     private Stmt printStatement() {
     Expr value = expression();
     consume(SEMICOLON, "Expect ';' after value.");
@@ -237,14 +253,6 @@ class Parser {
       }
 
       advance();
-    }
-  }
-
-   static void error(Token token, String message) {
-    if (token.type == TokenType.EOF) {
-      report(token.line, " at end", message);
-    } else {
-      report(token.line, " at '" + token.lexeme + "'", message);
     }
   }
 

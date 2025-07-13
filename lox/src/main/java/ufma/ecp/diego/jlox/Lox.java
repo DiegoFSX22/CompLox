@@ -56,7 +56,7 @@ public class Lox {
   Parser parser = new Parser(tokens);
   List<Stmt> statements = parser.parse();
   
-  if (expression != null) {
+  if (statements != null) {
   interpreter.interpret(statements);
   }
 }
@@ -77,5 +77,19 @@ public class Lox {
         "[line " + line + "] Error" + where + ": " + message);
     hadError = true;
   }
+
+static void error(Token token, String message) {
+    if (token.type == TokenType.EOF) {
+        report(token.line, " at end", message);
+    } else {
+        report(token.line, " at '" + token.lexeme + "'", message);
+    }
+}
+
+private static void report(int line, String where, String message) {
+    System.err.println("[line " + line + "] Error" + where + ": " + message);
+    hadError = true;
+}
+
 
 }
