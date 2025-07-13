@@ -4,7 +4,7 @@ import java.util.List;
 
 class Interpreter implements Expr.Visitor<Object>,
                              Stmt.Visitor<Void> {
-    private Environment environment = new Environment();
+  private Environment environment = new Environment();
 
   void interpret(List<Stmt> statements) {
     try {
@@ -20,11 +20,11 @@ class Interpreter implements Expr.Visitor<Object>,
     return expr.accept(this);
   }
 
-   private void execute(Stmt stmt) {
+    private void execute(Stmt stmt) {
     stmt.accept(this);
   }
 
-   void executeBlock(List<Stmt> statements,
+    void executeBlock(List<Stmt> statements,
                     Environment environment) {
     Environment previous = this.environment;
     try {
@@ -37,14 +37,14 @@ class Interpreter implements Expr.Visitor<Object>,
       this.environment = previous;
     }
   }
-
+  
     @Override
   public Void visitBlockStmt(Stmt.Block stmt) {
     executeBlock(stmt.statements, new Environment(environment));
     return null;
   }
-
-    @Override
+  
+   @Override
   public Void visitExpressionStmt(Stmt.Expression stmt) {
     evaluate(stmt.expression);
     return null;
@@ -66,7 +66,7 @@ class Interpreter implements Expr.Visitor<Object>,
     System.out.println(stringify(value));
     return null;
   }
-  
+
     @Override
   public Void visitVarStmt(Stmt.Var stmt) {
     Object value = null;
@@ -78,7 +78,7 @@ class Interpreter implements Expr.Visitor<Object>,
     return null;
   }
 
-   @Override
+    @Override
   public Void visitWhileStmt(Stmt.While stmt) {
     while (isTruthy(evaluate(stmt.condition))) {
       execute(stmt.body);
@@ -98,7 +98,7 @@ class Interpreter implements Expr.Visitor<Object>,
     return expr.value;
   }
 
-    @Override
+  @Override
   public Object visitLogicalExpr(Expr.Logical expr) {
     Object left = evaluate(expr.left);
 

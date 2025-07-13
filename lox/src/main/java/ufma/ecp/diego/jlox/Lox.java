@@ -49,47 +49,41 @@ public class Lox {
     }
   }
 
+
   private static void run(String source) {
-   Scanner scanner = new Scanner(source);
-  List<Token> tokens = scanner.scanTokens();
+    Scanner scanner = new Scanner(source);
+    List<Token> tokens = scanner.scanTokens();
 
-  Parser parser = new Parser(tokens);
-  List<Stmt> statements = parser.parse();
-  
-  if (statements != null) {
-  interpreter.interpret(statements);
-  }
-}
+    Parser parser = new Parser(tokens);
+    List<Stmt> statements = parser.parse();
 
-    static void error(int line, String message) {
-    report(line, "", message);
+    // Stop if there was a syntax error.
+    if (hadError) return;
+
+    interpreter.interpret(statements);
   }
 
-    static void runtimeError(RuntimeError error) {
-    System.err.println(error.getMessage() +
-        "\n[line " + error.token.line + "]");
+  static void runtimeError(RuntimeError error) {
+    System.err.println(error.getMessage() + "\n[line " + error.token.line + "]");
     hadRuntimeError = true;
   }
 
-  private static void report(int line, String where,
-                             String message) {
-    System.err.println(
-        "[line " + line + "] Error" + where + ": " + message);
-    hadError = true;
-  }
+static void error(int line, String message) {
+  report(line, "", message);
+}
 
 static void error(Token token, String message) {
-    if (token.type == TokenType.EOF) {
-        report(token.line, " at end", message);
-    } else {
-        report(token.line, " at '" + token.lexeme + "'", message);
-    }
+  if (token.type == TokenType.EOF) {
+    report(token.line, " at end", message);
+  } else {
+    report(token.line, " at '" + token.lexeme + "'", message);
+  }
 }
 
 private static void report(int line, String where, String message) {
-    System.err.println("[line " + line + "] Error" + where + ": " + message);
-    hadError = true;
+  System.err.println(
+      "[line " + line + "] Error" + where + ": " + message);
+  hadError = true;
 }
-
 
 }
